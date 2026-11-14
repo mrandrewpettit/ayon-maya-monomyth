@@ -1,2 +1,2 @@
 # Maya addon
-Maya integration for AYON.
+Maya integration for AYON in the Monomyth project.
