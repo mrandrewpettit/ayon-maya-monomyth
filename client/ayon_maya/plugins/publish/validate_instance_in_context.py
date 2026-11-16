@@ -81,3 +81,11 @@ class ValidateInstanceInContext(plugin.MayaInstancePlugin,
         """Return asset, task from publishing context data"""
         context = instance.context
         return context.data["folderPath"], context.data["task"]
+
+    @classmethod
+    def get_attr_defs_for_instance(cls, create_context, instance):
+        attr_defs = super().get_attr_defs_for_instance(create_context, instance)
+        for attr_def in attr_defs:
+            if attr_def.key == "active":
+                attr_def.tooltip = "Validate if instance asset is the same as context asset."
+        return attr_defs

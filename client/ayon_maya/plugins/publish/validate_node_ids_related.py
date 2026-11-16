@@ -116,3 +116,11 @@ class ValidateNodeIDsRelated(plugin.CbIdValidatorMixin,
         The repair action will regenerate new ids for
         the invalid nodes to match the instance's folder.
         """)
+
+    @classmethod
+    def get_attr_defs_for_instance(cls, create_context, instance):
+        attr_defs = super().get_attr_defs_for_instance(create_context, instance)
+        for attr_def in attr_defs:
+            if attr_def.key == "active":
+                attr_def.tooltip = "Validate nodes have a related `cbId` to the instance.data[folderPath]."
+        return attr_defs

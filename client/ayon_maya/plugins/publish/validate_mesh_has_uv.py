@@ -85,3 +85,11 @@ class ValidateMeshHasUVs(plugin.MayaInstancePlugin,
                         "Meshes detected with invalid or missing UVs:\n"
                         "{0}".format(names)
             )
+
+    @classmethod
+    def get_attr_defs_for_instance(cls, create_context, instance):
+        attr_defs = super().get_attr_defs_for_instance(create_context, instance)
+        for attr_def in attr_defs:
+            if attr_def.key == "active":
+                attr_def.tooltip = "Validate the current mesh has UVs."
+        return attr_defs

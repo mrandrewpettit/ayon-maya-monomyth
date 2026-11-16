@@ -19,9 +19,7 @@ class ValidateTransformNamingSuffix(plugin.MayaInstancePlugin,
     Suffices must be:
         - mesh:
             _GEO (regular geometry)
-            _GES (geometry to be smoothed at render)
             _GEP (proxy geometry; usually not to be rendered)
-            _OSD (open subdiv smooth at rendertime)
         - nurbsCurve: _CRV
         - nurbsSurface: _NRB
         - locator: _LOC
@@ -40,7 +38,7 @@ class ValidateTransformNamingSuffix(plugin.MayaInstancePlugin,
     label = "Suffix Naming Conventions"
     actions = [ayon_maya.api.action.SelectInvalidAction]
     SUFFIX_NAMING_TABLE = json.dumps({
-        "mesh": ["_GEO", "_GES", "_GEP", "_OSD"],
+        "mesh": ["_GEO", "_GEP"],
         "nurbsCurve": ["_CRV"],
         "nurbsSurface": ["_NRB"],
         "locator": ["_LOC"],
@@ -160,3 +158,11 @@ class ValidateTransformNamingSuffix(plugin.MayaInstancePlugin,
             "\n\\\n"  # force extra line breaks in the resulting markdown
             "Use the *Select Invalid* action to identify the invalid nodes."
         )
+
+    @classmethod
+    def get_attr_defs_for_instance(cls, create_context, instance):
+        attr_defs = super().get_attr_defs_for_instance(create_context, instance)
+        for attr_def in attr_defs:
+            if attr_def.key == "active":
+                attr_def.tooltip = "Validate transform naming suffix based on the type of its children shapes."
+        return attr_defs

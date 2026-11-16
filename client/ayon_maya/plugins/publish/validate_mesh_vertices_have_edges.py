@@ -83,3 +83,11 @@ class ValidateMeshVerticesHaveEdges(plugin.MayaInstancePlugin,
             raise PublishValidationError(
                 ("Meshes found in instance with vertices that "
                  "have no edges: {}").format(invalid))
+
+    @classmethod
+    def get_attr_defs_for_instance(cls, create_context, instance):
+        attr_defs = super().get_attr_defs_for_instance(create_context, instance)
+        for attr_def in attr_defs:
+            if attr_def.key == "active":
+                attr_def.tooltip = "Validate meshes have only vertices that are connected to edges."
+        return attr_defs

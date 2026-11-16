@@ -126,3 +126,11 @@ class ValidateMeshShaderConnections(plugin.MayaInstancePlugin,
         for shape, invalid_sets in invalid.items():
             for set_node in invalid_sets:
                 disconnect(shape, set_node)
+
+    @classmethod
+    def get_attr_defs_for_instance(cls, create_context, instance):
+        attr_defs = super().get_attr_defs_for_instance(create_context, instance)
+        for attr_def in attr_defs:
+            if attr_def.key == "active":
+                attr_def.tooltip = "Validate mesh shading engine connections are valid."
+        return attr_defs

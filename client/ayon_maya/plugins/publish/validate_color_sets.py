@@ -59,3 +59,11 @@ class ValidateColorSets(plugin.MayaInstancePlugin,
         for mesh in invalid:
             for set in cmds.polyColorSet(mesh, acs=True, q=True):
                 cmds.polyColorSet(mesh, colorSet=set, delete=True)
+
+    @classmethod
+    def get_attr_defs_for_instance(cls, create_context, instance):
+        attr_defs = super().get_attr_defs_for_instance(create_context, instance)
+        for attr_def in attr_defs:
+            if attr_def.key == "active":
+                attr_def.tooltip = "Validate all meshes in the instance have unlocked normals."
+        return attr_defs

@@ -79,3 +79,11 @@ class ValidateMeshNonZeroEdgeLength(plugin.MayaInstancePlugin,
                 title=label,
                 description="{}:\n- ".format(label) + "\n- ".join(invalid)
             )
+
+    @classmethod
+    def get_attr_defs_for_instance(cls, create_context, instance):
+        attr_defs = super().get_attr_defs_for_instance(create_context, instance)
+        for attr_def in attr_defs:
+            if attr_def.key == "active":
+                attr_def.tooltip = "Validate meshes don't have edges with a zero length."
+        return attr_defs
