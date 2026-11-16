@@ -320,9 +320,11 @@ class MayaHost(HostBase, IWorkfileHost, ILoadHost, IPublishHost):
         self.log.info("Installing AYON Maya USD chasers..")
 
         from .chasers import export_filter_properties  # noqa
+        from .chasers import export_strip_grp  # noqa
 
         for export_chaser in [
-            export_filter_properties.FilterPropertiesExportChaser
+            export_filter_properties.FilterPropertiesExportChaser,
+            export_strip_grp.StripGrpExportChaser,
         ]:
             mayaUsd.lib.ExportChaser.Register(export_chaser,
                                               export_chaser.name)
