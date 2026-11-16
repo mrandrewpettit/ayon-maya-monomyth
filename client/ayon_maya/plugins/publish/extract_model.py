@@ -8,6 +8,7 @@ from ayon_maya.api import lib
 from ayon_maya.api import plugin
 from maya import cmds
 
+_USD_MODEL_CREATOR_IDENTIFIER = "io.ayon.creators.maya.mayausd.model"
 
 class ExtractModel(plugin.MayaExtractorPlugin,
                    publish.OptionalPyblishPluginMixin):
@@ -30,8 +31,14 @@ class ExtractModel(plugin.MayaExtractorPlugin,
     scene_type = "ma"
     optional = True
 
+    def _is_usd_model(self, instance):
+        """Check if the instance is a USD model."""
+        return instance.data.get("creator_identifier") == _USD_MODEL_CREATOR_IDENTIFIER
+
     def process(self, instance):
         """Plugin entry point."""
+        if self._is_usd_model(instance):
+            return
         if not self.is_active(instance.data):
             return
 
@@ -113,3 +120,10 @@ class ExtractModel(plugin.MayaExtractorPlugin,
 
         self.log.debug("Extracted instance '%s' to: %s" % (instance.name,
                                                            path))
+
+    @classmethod
+    def get_attr_defs_for_instance(cls, create_context, instance):
+        """Get the attribute definitions for the instance."""
+        if instance.data.get("creator_identifier") == _USD_MODEL_CREATOR_IDENTIFIER:
+            return []
+        return super().get_attr_defs_for_instance(create_context, instance)

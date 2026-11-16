@@ -585,10 +585,22 @@ class ExtractMayaUsd(plugin.MayaExtractorPlugin,
         # The Arguments that can be modified by the Publisher
         override_defs = cls._get_additional_attr_defs(is_enabled)
         overrides = set(cls.overrides)
+
+        locked_keys = [
+            "stripNamespaces",
+            "worldspace",
+            "exportVisibility",
+            "mergeTransformAndShape",
+        ]
         for key, value in override_defs.items():
             if key not in overrides:
                 continue
-
+            if (
+                instance.data.get("creator_identifier") == _USD_MODEL_CREATOR_IDENTIFIER
+                and key in locked_keys
+            ):
+                value.disabled = True
+                value.default = True
             attr_defs.append(value)
 
         attr_defs.append(
@@ -862,6 +874,7 @@ class ExtractMayaUsdAnim(ExtractMayaUsd):
         members = cmds.ls(cmds.sets(out_set, query=True), long=True)
         return members
 
+_USD_MODEL_CREATOR_IDENTIFIER = "io.ayon.creators.maya.mayausd.model"
 
 class ExtractMayaUsdModel(ExtractMayaUsd):
     """Extractor for Maya USD Asset data for model family
@@ -877,9 +890,19 @@ class ExtractMayaUsdModel(ExtractMayaUsd):
     active = False
 
     def process(self, instance):
+        if (instance.data.get("creator_identifier") == _USD_MODEL_CREATOR_IDENTIFIER):
+            return
+
         # TODO: Fix this without changing instance data
         instance.data["exportAnimationData"] = False
         super().process(instance)
+
+    @classmethod
+    def get_attr_defs_for_instance(cls, create_context, instance):
+        """Get the attribute definitions for the instance."""
+        if instance.data.get("creator_identifier") == _USD_MODEL_CREATOR_IDENTIFIER:
+            return []
+        return super().get_attr_defs_for_instance(create_context, instance)
 
 
 class ExtractMayaUsdPointcache(ExtractMayaUsd):

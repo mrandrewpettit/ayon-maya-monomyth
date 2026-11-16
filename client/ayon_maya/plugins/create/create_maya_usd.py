@@ -253,12 +253,30 @@ class CreateMayaUsdModel(CreateMayaUsd):
 
     allow_animation = False
 
+    def get_attr_defs_for_instance(self, instance):
+        attr_defs = super().get_attr_defs_for_instance(instance)
+
+        for attr_def in attr_defs:
+            if attr_def.key == "stripNamespaces":
+                attr_def.visible = False
+            if attr_def.key == "exportRoots":
+                attr_def.disabled = True
+            if (attr_def.key == "jobContext"
+                or attr_def.key == "includeUserDefinedAttributes"
+                or attr_def.key == "attr"
+                or attr_def.key == "attrPrefix"
+                or attr_def.key == "defaultUSDFormat"):
+                attr_def.visible = False
+
+        return attr_defs
+
     def get_pre_create_attr_defs(self):
         attr_defs = super().get_pre_create_attr_defs()
 
-        # Enable by default
+        # Enable by default and disable the attributes
         for attr_def in attr_defs:
-            if attr_def.key == "createAssetTemplateHierarchy":
+            if attr_def.key == "createAssetTemplateHierarchy" or attr_def.key == "use_selection":
+                attr_def.disabled = True
                 attr_def.default = True
 
         return attr_defs

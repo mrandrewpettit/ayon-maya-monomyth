@@ -24,6 +24,7 @@ from ayon_maya.api.lib import (
 from ayon_maya.api import plugin
 from maya import cmds
 
+_USD_MODEL_CREATOR_IDENTIFIER = "io.ayon.creators.maya.mayausd.model"
 
 class ExtractAlembic(plugin.MayaExtractorPlugin,
                      OptionalPyblishPluginMixin):
@@ -74,6 +75,8 @@ class ExtractAlembic(plugin.MayaExtractorPlugin,
     writeVisibility = False
 
     def process(self, instance):
+        if (instance.data.get("creator_identifier") == _USD_MODEL_CREATOR_IDENTIFIER):
+            return
         if not self.is_active(instance.data):
             return
 
@@ -300,6 +303,13 @@ class ExtractAlembic(plugin.MayaExtractorPlugin,
 
     def get_members_and_roots(self, instance):
         return instance[:], instance.data.get("setMembers")
+
+    @classmethod
+    def get_attr_defs_for_instance(cls, create_context, instance):
+        """Get the attribute definitions for the instance."""
+        if instance.data.get("creator_identifier") == _USD_MODEL_CREATOR_IDENTIFIER:
+            return []
+        return super().get_attr_defs_for_instance(create_context, instance)
 
     @classmethod
     def get_attribute_defs(cls):
